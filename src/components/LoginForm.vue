@@ -1,23 +1,23 @@
 <template>
-    <div>
+    <div class="login">
+      
+      <form @submit.prevent="loginUser" class="my-4">
         <h2>Login</h2>
-        <form @submit.prevent="loginUser">
-            <div>
-                <label for="email">Email:</label>
-                <input type="email" id="email" v-model="email" required>
-            </div>
-            <div>
-                <label for="password">Password:</label>
-                <input type="password" id="password" v-model="password" required>
-            </div>
-            <button type="submit">Login</button>
-        </form>
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="email" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" v-model="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
     </div>
-</template>
+  </template>
   
 <script>
 import axios from 'axios';
-import router from '../router'; // Import Vue Router instance
 
 export default {
     data() {
@@ -35,24 +35,43 @@ export default {
 
             axios.post('http://localhost:8000/login', userData)
                 .then(response => {
-                    console.log(response)
+
                     localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('loggedInUser', response.data.username);
+
                     // Emit event to notify the parent component (App.vue) that the user is logged in
                     this.$emit('userLoggedIn');
 
                     // Clear form fields
                     this.email = '';
                     this.password = '';
-
-                    // Redirect to desired page or perform any other action
-                    router.push('/home'); // Replace '/dashboard' with the desired route path
+                    alert(response.data.message)
+                    // Reload the page
+                    window.location.reload(); 
 
                 })
                 .catch(error => {
-                    console.log(error)
+                    alert(error.response.data.message)
                 });
         },
     },
 };
 </script>
+
+<style scoped>
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40vh;
+}
+
+form {
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+}
+</style>
   
